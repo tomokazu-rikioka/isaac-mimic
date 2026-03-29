@@ -1,0 +1,12 @@
+# Isaac Lab Mimic イメージのビルド用 Docker Compose
+# コンテナの起動は sbatch + docker run で行う（slurm/*.sh 参照）
+#
+# 使い方:
+#   cd ~/isaac-mimic && docker compose -f docker/docker-compose.yml build
+
+services:
+  isaac-lab-mimic:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: isaac-lab-mimic:2.3.2

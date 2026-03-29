@@ -1,0 +1,120 @@
+# 実験マトリクス定義
+#
+# 12条件: Policy (2) × データ量 (3) × Domain Randomization (2)
+#
+# 各実験の実行は slurm/train.sh と slurm/play.sh で行う。
+# 一括実行: bash scripts/run_experiments.sh all
+
+# 共通設定
+common:
+  robot: franka
+  task_base: Isaac-Stack-Cube-Franka-IK-Rel
+  algo: bc
+  normalize_training_actions: true
+  num_rollouts: 50  # 評価時のロールアウト数
+
+# データ生成設定
+generation:
+  skillgen:
+    input_file: datasets/annotated_dataset_skillgen.hdf5
+    num_envs: 5
+    gpu_memory_per_env_gb: 4.5  # A100 80GBなら ~17環境可能
+  visuomotor:
+    num_envs: 5
+    gpu_memory_per_env_gb: 8.0  # カメラ付きはメモリ消費が大きい
+
+# 実験条件
+experiments:
+  # --- State-based BC ---
+  - id: state_10
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_10.hdf5
+    num_demos: 10
+    domain_randomization: false
+
+  - id: state_100
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_100.hdf5
+    num_demos: 100
+    domain_randomization: false
+
+  - id: state_1000
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_1000.hdf5
+    num_demos: 1000
+    domain_randomization: false
+
+  - id: state_10_dr
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_10.hdf5
+    num_demos: 10
+    domain_randomization: true
+
+  - id: state_100_dr
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_100.hdf5
+    num_demos: 100
+    domain_randomization: true
+
+  - id: state_1000_dr
+    policy_type: state
+    task: Isaac-Stack-Cube-Franka-IK-Rel-v0
+    dataset: datasets/generated_state_1000.hdf5
+    num_demos: 1000
+    domain_randomization: true
+
+  # --- Visuomotor BC ---
+  - id: visuomotor_10
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_10.hdf5
+    num_demos: 10
+    domain_randomization: false
+
+  - id: visuomotor_100
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_100.hdf5
+    num_demos: 100
+    domain_randomization: false
+
+  - id: visuomotor_1000
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_1000.hdf5
+    num_demos: 1000
+    domain_randomization: false
+
+  - id: visuomotor_10_dr
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_10.hdf5
+    num_demos: 10
+    domain_randomization: true
+
+  - id: visuomotor_100_dr
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_100.hdf5
+    num_demos: 100
+    domain_randomization: true
+
+  - id: visuomotor_1000_dr
+    policy_type: visuomotor
+    task: Isaac-Stack-Cube-Franka-IK-Rel-Visuomotor-Mimic-v0
+    dataset: datasets/generated_visuomotor_1000.hdf5
+    num_demos: 1000
+    domain_randomization: true
+
+# 参考値（ABEJA記事 + Isaac Lab公式ドキュメント）
+reference_results:
+  state_10_1000ep: "0% (ABEJA記事)"
+  state_1000_100ep: "50% (ABEJA記事)"
+  state_1000_1000ep: "90% (ABEJA記事)"
+  skillgen_state_1000_2000ep: "40-85% (Isaac Lab公式)"
+  visuomotor_1000_600ep: "50-60% (Isaac Lab公式, Nut Pouring)"
